@@ -9,7 +9,7 @@ import {SmallText} from './Typography';
 import ContactIcon from '../assets/contact.svg';
 import LoginIcon from '../assets/login.svg';
 import LogoutIcon from '../assets/logout.svg';
-import ChaınIcon from '../assets/chain.svg';
+import ChainIcon from '../assets/chain.svg';
 import HomeIcon from '../assets/home.svg';
 import {backgroundColor} from '../constants/stylesConstants';
 
@@ -43,6 +43,13 @@ export const FixedBottomNavigation = () => {
       icon: <HomeIcon fill="#fff" width="25px" height="20px" />,
     },
     {
+      text: 'Goals',
+      path: 'Goals',
+      showLink: isUserLoggedIn(),
+      onPress: () => navigate.navigate('Goals', {}),
+      icon: <ChainIcon fill="#fff" width="25px" height="20px" />,
+    },
+    {
       text: 'Contact Us',
       path: 'Contact',
       showLink: true,
@@ -63,7 +70,7 @@ export const FixedBottomNavigation = () => {
       path: 'Logout',
       showLink: isUserLoggedIn(),
       onPress: async () => await signOutCurrentAuth(),
-      icon: <LogoutIcon fill="#fff" width="30px" height="30px" />,
+      icon: <LogoutIcon fill="#fff" width="25px" height="20px" />,
     },
   ];
   return (

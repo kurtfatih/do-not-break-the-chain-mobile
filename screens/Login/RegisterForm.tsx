@@ -66,7 +66,6 @@ export const RegisterForm: React.FC<RegisterFormI> = ({
       />
       <Spacer space={20} />
       <Input
-        keyboardType="visible-password"
         onChange={e => {
           handleChangeOnPassword(e.nativeEvent.text);
         }}
