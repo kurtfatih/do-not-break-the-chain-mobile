@@ -11,6 +11,7 @@ import {
 } from '../../constants/stylesConstants';
 import {useGoalContext} from '../../context/GoalContext';
 import TrashIcon from '../../assets/trash.svg';
+import {useNavigationHook} from '../../hooks/useNavigationHook';
 
 const MainBody = styled.View`
   flex: 4;
@@ -63,7 +64,12 @@ const DeleteButton = styled.TouchableOpacity`
 `;
 export const GoalsScreen = () => {
   const {addNewGoal, deleteGoal, getGoals} = useGoalContext();
+  const navigate = useNavigationHook();
   const goalsLength = getGoals?.length ?? 0;
+  const goalPressHandle = (id: string) => {
+    console.log(id);
+    navigate.navigate('Goal', {id});
+  };
   return (
     <MainBody>
       <GoalsContainerScrollView
@@ -74,7 +80,7 @@ export const GoalsScreen = () => {
         {goalsLength > 0 ? (
           getGoals?.map(({goalId, goalTexts}) => (
             <GoalCard key={goalId}>
-              <GoalCardBody onPress={() => console.log('on press')}>
+              <GoalCardBody onPress={() => goalPressHandle(goalId)}>
                 <XSmallText>{goalTexts ? goalTexts[0] : goalId}</XSmallText>
               </GoalCardBody>
               <DeleteButton
