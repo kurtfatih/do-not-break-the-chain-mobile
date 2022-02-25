@@ -1,11 +1,12 @@
 import * as React from 'react';
 import styled from 'styled-components/native';
+import {backgroundColor} from '../constants/stylesConstants';
 import {useErrorContext} from '../context/ErrorContext';
 import {SmallText} from './Typography';
 
 const ErrorMessageBoxContainer = styled.View`
   display: flex;
-  background-color: red;
+  background-color: ${backgroundColor};
   flex-direction: row;
   justify-content: space-around;
   bottom: 0;

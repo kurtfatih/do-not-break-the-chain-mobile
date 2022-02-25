@@ -29,7 +29,9 @@ export const ErrorContextProvider: React.FC = ({children}) => {
     if (e instanceof FirebaseError) {
       const errMsg = e.code
         .split('/')
-        [e.code.split('/').length - 1].toUpperCase();
+        [e.code.split('/').length - 1].split('-')
+        .join(' ')
+        .toUpperCase();
       setErrorMsg(errMsg);
       cleanErrMsg();
     }
