@@ -18,6 +18,10 @@ const Text = styled.Text<{
     ${({mt}) => mt && `margin-top:${mt + 'px'};`}
     ${({mr}) => mr && `margin-right:${mr + 'px'};`}
 `;
+
+export const XSmallText = styled(Text)`
+  font-size: 12px;
+`;
 export const SmallText = styled(Text)`
   font-size: 16px;
 `;

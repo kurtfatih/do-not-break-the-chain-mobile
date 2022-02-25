@@ -44,7 +44,7 @@ export const LoginScreen = () => {
   };
   React.useEffect(() => {
     if (isUserLoggedIn()) {
-      navigate.navigate('Home', {});
+      navigate.navigate('Goals', {});
     }
   }, [isUserLoggedIn, navigate]);
 
