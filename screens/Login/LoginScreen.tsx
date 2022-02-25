@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {Platform} from 'react-native';
 import styled from 'styled-components/native';
 import {darkColor} from '../../constants/stylesConstants';
 import {useUserContext} from '../../context/UserContext';
@@ -48,7 +49,8 @@ export const LoginScreen = () => {
   }, [isUserLoggedIn, navigate]);
 
   return (
-    <KeyboardAvoidingView>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <MainBody>
         <FormContainer>
           {isShowLoginForm ? (
