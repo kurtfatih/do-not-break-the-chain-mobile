@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "827081645551",
+    "project_id": "do-not-break-the-chain-mobile",
+    "storage_bucket": "do-not-break-the-chain-mobile.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827081645551:android:b3c582c67479096dd02a1a",
+        "android_client_info": {
+          "package_name": "com.donotbreakthechain.company"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "827081645551-40ptcabjsb5is629u0ed1ak8qep0c3vo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcG7OnkvgUnJuAuCijIAg2kUR34vCunBg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "827081645551-40ptcabjsb5is629u0ed1ak8qep0c3vo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
