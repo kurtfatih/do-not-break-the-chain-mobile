@@ -45,13 +45,9 @@ export const Day = styled.View<{
   cursor: ${({isSelecTable}) => (isSelecTable ? 'pointer' : 'unset')};
   margin-vertical: 2;
   margin-horizontal: 2;
-  &:hover {
-    background-color: ${({isSelecTable}) =>
-      isSelecTable ? greenColor : 'none'};
-  }
-  shadowcolor: #000;
-  shadowopacity: 0.58;
-  shadowradius: 16;
+  shadow-color: #000;
+  shadow-opacity: 0.58;
+  shadow-radius: 16;
   text-align: left;
 `;
 

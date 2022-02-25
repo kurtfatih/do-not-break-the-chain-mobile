@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Button, ScrollView, View, TouchableOpacity} from 'react-native';
+import {TouchableOpacity} from 'react-native';
 import styled from 'styled-components/native';
 import AddIcon from '../../assets/add.svg';
 import {SmallText, XSmallText} from '../../components/Typography';
@@ -29,7 +29,14 @@ const IconContainer = styled.View`
   padding: 10px;
   position: absolute;
 `;
-const GoalsContainerScrollView = styled.ScrollView`
+const GoalsContainerScrollView = styled.ScrollView.attrs(() => ({
+  contentContainerStyle: {
+    marginHorizontal: 2,
+    marginVertical: 2,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+}))`
   flex: 3;
   height: 90%;
 `;
@@ -42,6 +49,9 @@ const GoalCard = styled.View`
   margin-vertical: 2px;
   padding: 5px;
   justify-content: space-between;
+`;
+const GoalCardBody = styled.TouchableOpacity`
+  height: 80%;
 `;
 const DeleteButton = styled.TouchableOpacity`
   background-color: ${orangeColor};
@@ -59,22 +69,14 @@ export const GoalsScreen = () => {
       <GoalsContainerScrollView
         scrollEnabled={true}
         showsVerticalScrollIndicator={true}
-        keyboardShouldPersistTaps={true}
-        keyboardDismissMode="on-drag"
-        contentContainerStyle={{
-          marginHorizontal: 2,
-          marginVertical: 2,
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-        }}>
+        keyboardShouldPersistTaps={'always'}
+        keyboardDismissMode="on-drag">
         {goalsLength > 0 ? (
           getGoals?.map(({goalId, goalTexts}) => (
             <GoalCard key={goalId}>
-              <TouchableOpacity
-                onPress={() => console.log('on press')}
-                style={{height: '80%'}}>
+              <GoalCardBody onPress={() => console.log('on press')}>
                 <XSmallText>{goalTexts ? goalTexts[0] : goalId}</XSmallText>
-              </TouchableOpacity>
+              </GoalCardBody>
               <DeleteButton
                 onPress={async () => {
                   deleteGoal(goalId);
