@@ -16,7 +16,7 @@ import {
   APP_ID,
   // @ts-ignore
   MEASUREMENT_ID,
-} from 'react-native-dotenv';
+} from '@env';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries

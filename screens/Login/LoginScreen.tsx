@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components/native';
+import {darkColor} from '../../constants/stylesConstants';
 import {useUserContext} from '../../context/UserContext';
 import {useNavigationHook} from '../../hooks/useNavigationHook';
 import {LoginForm} from './LoginForm';
@@ -7,7 +8,7 @@ import {RegisterForm} from './RegisterForm';
 
 const KeyboardAvoidingView = styled.KeyboardAvoidingView`
   flex: 1;
-  background-color: #1c222d;
+  background-color: ${darkColor};
 `;
 const MainBody = styled.KeyboardAvoidingView`
   flex: 1;

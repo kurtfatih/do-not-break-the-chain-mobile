@@ -37,6 +37,13 @@ export const RegisterForm: React.FC<RegisterFormI> = ({
   displayName,
 }) => {
   const {createUserWithEmailPasswordAndDisplayName} = useUserContext();
+  const handleRegister = async () => {
+    await createUserWithEmailPasswordAndDisplayName({
+      displayName,
+      email,
+      password,
+    });
+  };
   return (
     <>
       <Input
@@ -69,14 +76,7 @@ export const RegisterForm: React.FC<RegisterFormI> = ({
         secureTextEntry
       />
       <Spacer space={20} />
-      <SubmitButton
-        onPress={async () => {
-          await createUserWithEmailPasswordAndDisplayName({
-            displayName,
-            email,
-            password,
-          });
-        }}>
+      <SubmitButton onPress={handleRegister}>
         <SmallText>Sign Up</SmallText>
       </SubmitButton>
       <Spacer space={5} />

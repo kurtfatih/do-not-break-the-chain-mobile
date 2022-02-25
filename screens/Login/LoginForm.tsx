@@ -33,6 +33,9 @@ export const LoginForm: React.FC<LoginFormPropsI> = ({
   email,
 }) => {
   const {signInWithPasswordAndEmail} = useUserContext();
+  const handleLogin = async () => {
+    await signInWithPasswordAndEmail({email, password});
+  };
   return (
     <>
       <Input
@@ -55,10 +58,7 @@ export const LoginForm: React.FC<LoginFormPropsI> = ({
         placeholder="Password..."
       />
       <Spacer space={20} />
-      <SubmitButton
-        onPress={async () => {
-          await signInWithPasswordAndEmail({email, password});
-        }}>
+      <SubmitButton onPress={handleLogin}>
         <SmallText>Login</SmallText>
       </SubmitButton>
       <Spacer space={5} />

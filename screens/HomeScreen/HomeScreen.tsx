@@ -10,7 +10,11 @@ import {
 import styled from 'styled-components/native';
 import {LargeText, MediumText, SmallText} from '../../components/Typography';
 import {todayDays} from '../../constants/dateConstants';
-import {greenColor, orangeColor} from '../../constants/stylesConstants';
+import {
+  darkColor,
+  greenColor,
+  orangeColor,
+} from '../../constants/stylesConstants';
 import {generateArrayFromNumber} from '../../utils/arrUtils';
 export const Day = styled.View<{
   isSelected?: boolean;
@@ -53,7 +57,7 @@ export const Day = styled.View<{
 
 const MainBody = styled.View`
   flex: 4;
-  background-color: #1c222d;
+  background-color: ${darkColor};
   flex-direction: column;
 `;
 const HeaderContainer = styled.View`
