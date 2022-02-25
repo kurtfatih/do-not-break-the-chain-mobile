@@ -1,21 +1,23 @@
 import {Timestamp} from 'firebase/firestore';
-import React, {createContext, useContext} from 'react';
+import React, {createContext, useContext, useCallback} from 'react';
 
-import {nowToDate} from '../constants/dateConstants';
+import {months, now, nowToDate} from '../constants/dateConstants';
 import {
   GoalDataI,
   GoalsDataType,
   GoalTypeUpdatableFieldType,
   SelectedDaysType,
 } from '../firebase/types';
+import {generateArrayFromNumber} from '../utils/arrUtils';
 import {dateUtils} from '../utils/dateUtils';
+import {checkIfTwoNumberAreEqual} from '../utils/numberUtils';
 import {useDbContext} from './DbContext';
 
 interface GoalContextI {
   getGoals: GoalsDataType | undefined;
   findTheGoal: (id: string) => boolean | undefined;
   isGoalExist: (id: string) => boolean;
-  findAndGetGoalById: (id?: string | undefined) => GoalDataI | undefined;
+  findAndSetGoalData: (id?: string | undefined) => GoalDataI | undefined;
   goalData: GoalDataI | undefined;
   setGoalData: React.Dispatch<React.SetStateAction<GoalDataI | undefined>>;
   addNewGoal: () => Promise<void>;
@@ -47,13 +49,129 @@ export const GoalContextProvider: React.FC = ({children}) => {
   const {updateGoalOnDb, createNewGoalOnDb, goalsData, deleteGoalOnDb} =
     useDbContext();
   const [goalData, setGoalData] = React.useState<GoalDataI>();
+  const goalCreatedAtToDate = dateUtils.timestampToDate(
+    goalData?.createdAt ?? now,
+  );
+  const goalYear = dateUtils.parseTheDate(goalCreatedAtToDate).year;
+  const goalMonth = dateUtils.parseTheDate(goalCreatedAtToDate).month;
 
+  const [activeIndexOfMonth, setActiveIndexOfMonth] = React.useState(
+    () => goalMonth,
+  );
+  const [activeMonthName, setActiveMonthName] = React.useState(
+    () => months[activeIndexOfMonth],
+  );
+  const [activeYear, setActiveYear] = React.useState(() => goalYear);
+  const [
+    activeNumberOfDaysInCurrentMonth,
+    setActiveNumberOfDaysInCurrentMonth,
+  ] = React.useState(() =>
+    dateUtils.getNumberOfDaysInMonth(activeYear, activeIndexOfMonth),
+  );
+  const [activeDate, setActiveDate] = React.useState(
+    () => new Date(activeYear, activeIndexOfMonth),
+  );
   const getGoals = React.useMemo(() => {
     if (!goalsData) {
       return;
     }
     return goalsData;
   }, [goalsData]);
+
+  const generateNumberArrayByNumberOfDaysInActiveMonth = React.useMemo(() => {
+    const days = generateArrayFromNumber(activeNumberOfDaysInCurrentMonth);
+    return days;
+  }, [activeNumberOfDaysInCurrentMonth]);
+
+  const getTheGoalTextByActiveDate = () => {
+    if (goalData?.goalTexts?.length === 0 || !goalData?.goalTexts) {
+      return;
+    }
+    const goalTextObj = goalData?.goalTexts.filter(
+      ({date}) =>
+        dateUtils.parseTheDate(date.toDate()).year ===
+        dateUtils.parseTheDate(activeDate).year,
+    );
+    if (goalTextObj.length === 0) {
+      return;
+    }
+    const goalText = goalTextObj[goalTextObj.length - 1].text;
+    return goalText;
+  };
+
+  const getTheSelectedDaysInMonthByActiveDate = React.useCallback(() => {
+    const parsedActiveDate = dateUtils.parseTheDate(activeDate);
+    if (!goalData?.selectedDays || goalData.selectedDays.length < 0) {
+      return;
+    }
+    const selectedDaysInMonth = goalData.selectedDays.filter(obj => {
+      const {month, year} = dateUtils.parseTheDate(
+        dateUtils.timestampToDate(obj.date),
+      );
+      if (
+        checkIfTwoNumberAreEqual(month, parsedActiveDate.month) &&
+        checkIfTwoNumberAreEqual(year, parsedActiveDate.year)
+      ) {
+        return obj;
+      }
+    });
+    if (selectedDaysInMonth.length === 0) {
+      return;
+    }
+    return selectedDaysInMonth;
+  }, [activeDate, goalData?.selectedDays]);
+
+  const getTheSelectedDayTextByDate = (selectedDayTimestamp: Timestamp) => {
+    if (!goalData?.selectedDays) {
+      return;
+    }
+    const selectedday = goalData.selectedDays.find(({date}) =>
+      date.isEqual(selectedDayTimestamp),
+    );
+    const selectedDayText = selectedday?.note;
+    return selectedDayText;
+  };
+  const isTheSelectedDayMatchWithTheDayInTheComponent = React.useCallback(
+    (day: number) => {
+      const pureDaySelected = getTheSelectedDaysInMonthByActiveDate();
+      if (!pureDaySelected) {
+        return false;
+      }
+      const isDaySelected = pureDaySelected.some(
+        ({date}) =>
+          dateUtils.parseTheDate(dateUtils.timestampToDate(date)).day === day,
+      );
+      return isDaySelected;
+    },
+    [getTheSelectedDaysInMonthByActiveDate],
+  );
+
+  const changeMonth = useCallback(
+    (indexOfMonth: number) => {
+      setActiveMonthName(months[indexOfMonth]);
+      setActiveIndexOfMonth(indexOfMonth);
+      const newNumberOfDaysInActiveMonth = dateUtils.getNumberOfDaysInMonth(
+        activeYear,
+        indexOfMonth,
+      );
+      setActiveNumberOfDaysInCurrentMonth(newNumberOfDaysInActiveMonth);
+      setActiveDate(new Date(activeYear, indexOfMonth));
+    },
+    [activeYear],
+  );
+  const changeYear = useCallback(
+    (year: number) => {
+      setActiveYear(year);
+      const newNumberOfDaysInActiveMonth = dateUtils.getNumberOfDaysInMonth(
+        year,
+        activeIndexOfMonth,
+      );
+      setActiveNumberOfDaysInCurrentMonth(newNumberOfDaysInActiveMonth);
+      setActiveDate(new Date(year, activeIndexOfMonth));
+    },
+    [activeIndexOfMonth],
+  );
+
   // update the goal
 
   const findTheGoal = (id: string) => {
@@ -69,13 +187,13 @@ export const GoalContextProvider: React.FC = ({children}) => {
     return isExist;
   };
 
-  const findAndGetGoalById = React.useCallback(
+  const findAndSetGoalData = React.useCallback(
     (id?: string) => {
       const goal = goalsData?.filter(goalObj => goalObj.goalId === id);
       if (!goal) {
         return;
       }
-      return goal[0];
+      return setGoalData(goal[0]);
     },
     [goalsData],
   );
@@ -150,7 +268,7 @@ export const GoalContextProvider: React.FC = ({children}) => {
         goalData,
         findTheGoal,
         isGoalExist,
-        findAndGetGoalById,
+        findAndSetGoalData,
         setGoalData,
         addNewGoal,
         updateGoal,
