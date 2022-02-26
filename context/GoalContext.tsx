@@ -17,7 +17,7 @@ interface GoalContextI {
   getGoals: GoalsDataType | undefined;
   findTheGoal: (id: string) => boolean | undefined;
   isGoalExist: (id: string) => boolean;
-  findAndSetGoalData: (id?: string | undefined) => GoalDataI | undefined;
+  findAndSetGoalData: (id?: string | undefined) => void;
   goalData: GoalDataI | undefined;
   setGoalData: React.Dispatch<React.SetStateAction<GoalDataI | undefined>>;
   addNewGoal: () => Promise<void>;
@@ -31,6 +31,15 @@ interface GoalContextI {
     goalCreatedAt: Timestamp,
     selectedDays: SelectedDaysType,
   ) => number;
+  generateNumberArrayByNumberOfDaysInActiveMonth: number[];
+  isTheSelectedDayMatchWithTheDayInTheComponent: (day: number) => boolean;
+  activeYear: number;
+  activeIndexOfMonth: number;
+  getTheSelectedDayTextByDate: (
+    selectedDayTimestamp: Timestamp,
+  ) => string | undefined;
+  changeMonth: (indexOfMonth: number) => void;
+  changeYear: (year: number) => void;
 }
 
 const GoalContext = createContext<GoalContextI | null>(null);
@@ -273,6 +282,13 @@ export const GoalContextProvider: React.FC = ({children}) => {
         addNewGoal,
         updateGoal,
         getTheMissedDay,
+        generateNumberArrayByNumberOfDaysInActiveMonth,
+        isTheSelectedDayMatchWithTheDayInTheComponent,
+        activeYear,
+        activeIndexOfMonth,
+        getTheSelectedDayTextByDate,
+        changeMonth,
+        changeYear,
         // changeOnGoalText,
         deleteGoal,
       }}>

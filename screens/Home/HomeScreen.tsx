@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import styled from 'styled-components/native';
+import {DayItem, DayItemContainer} from '../../components/DayItem';
 import {LargeText, MediumText, SmallText} from '../../components/Typography';
 import {todayDays} from '../../constants/dateConstants';
 import {
@@ -15,6 +16,7 @@ import {
   greenColor,
   orangeColor,
 } from '../../constants/stylesConstants';
+import {useNavigationHook} from '../../hooks/useNavigationHook';
 import {generateArrayFromNumber} from '../../utils/arrUtils';
 export const Day = styled.View<{
   isSelected?: boolean;
@@ -63,14 +65,6 @@ const BodyContainer = styled.View`
   display: flex;
   flex: 2;
 `;
-const DayItemContainer = styled.View`
-  flex: 1;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  align-content: center;
-`;
 const FooterContainer = styled.View`
   flex: 1;
   align-items: center;
@@ -79,43 +73,48 @@ const FooterContainer = styled.View`
 `;
 
 const days = generateArrayFromNumber(31);
-const dummyDaysObj = days.map(day => {
-  if (day === todayDays) {
-    const obj = {
-      isSelected: false,
-      isSelecTable: true,
-      isOnThePast: false,
-      isOnTheFuture: false,
-    };
-    return obj;
-  }
-  if (day < todayDays) {
-    return {
-      isSelected: false,
-      isSelecTable: false,
-      isOnThePast: true,
-      isOnTheFuture: false,
-    };
-  }
-  if (day > todayDays) {
-    return {
-      isSelected: false,
-      isSelecTable: false,
-      isOnThePast: false,
-      isOnTheFuture: true,
-    };
-  }
-  return {
-    isSelected: false,
-    isSelecTable: false,
-    isOnThePast: false,
-    isOnTheFuture: false,
-  };
-});
 const missedDays = todayDays - 1;
-console.log(dummyDaysObj);
 console.log('todadays', todayDays);
 export const HomeScreen = () => {
+  const navigate = useNavigationHook();
+
+  const dummyDaysObj = days.map(day => {
+    if (day === todayDays) {
+      const obj = {
+        isSelected: false,
+        isTheDatesAreExactSame: true,
+        isTheDateOnThePast: false,
+        isTheDateOnTheFuture: false,
+        handleDayPress: () => navigate.navigate('Goals', {}),
+      };
+      return obj;
+    }
+    if (day < todayDays) {
+      return {
+        isSelected: false,
+        isTheDatesAreExactSame: false,
+        isTheDateOnThePast: true,
+        isTheDateOnTheFuture: false,
+        handleDayPress: () => null,
+      };
+    }
+    if (day > todayDays) {
+      return {
+        isSelected: false,
+        isTheDatesAreExactSame: false,
+        isTheDateOnThePast: false,
+        isTheDateOnTheFuture: true,
+        handleDayPress: () => null,
+      };
+    }
+    return {
+      isSelected: false,
+      isTheDatesAreExactSame: false,
+      isTheDateOnThePast: false,
+      isTheDateOnTheFuture: false,
+      handleDayPress: () => null,
+    };
+  });
   return (
     <MainBody>
       <HeaderContainer>
@@ -126,18 +125,13 @@ export const HomeScreen = () => {
 
       <BodyContainer>
         <DayItemContainer>
-          {dummyDaysObj.map(
-            ({isOnTheFuture, isOnThePast, isSelecTable, isSelected}, index) => (
-              <DayItem
-                key={index}
-                isOnTheFuture={isOnTheFuture}
-                isOnThePast={isOnThePast}
-                isSelecTable={isSelecTable}
-                isSelected={isSelected}
-                dayAsText={(index + 1).toString()}
-              />
-            ),
-          )}
+          {dummyDaysObj.map((props, index) => (
+            <DayItem
+              key={index}
+              dayAsText={(index + 1).toString()}
+              {...props}
+            />
+          ))}
         </DayItemContainer>
       </BodyContainer>
       <FooterContainer>
@@ -146,30 +140,30 @@ export const HomeScreen = () => {
     </MainBody>
   );
 };
-interface DayItemProps {
-  isOnTheFuture: boolean;
-  isOnThePast: boolean;
-  isSelecTable: boolean;
-  isSelected: boolean;
-  dayAsText: string;
-}
-const DayItem: React.FC<DayItemProps> = ({dayAsText, isSelected, ...props}) => {
-  const [isSelectedLocal, setIsSelectedLocal] = React.useState(isSelected);
-  const handleDayPress = () => {
-    if (props.isOnTheFuture || props.isOnThePast) {
-      return;
-    }
-    if (props.isSelecTable && !isSelected) {
-      return setIsSelectedLocal(true);
-    }
-    return;
-  };
+// interface DayItemProps {
+//   isOnTheFuture: boolean;
+//   isOnThePast: boolean;
+//   isSelecTable: boolean;
+//   isSelected: boolean;
+//   dayAsText: string;
+// }
+// const DayItem: React.FC<DayItemProps> = ({dayAsText, isSelected, ...props}) => {
+//   const [isSelectedLocal, setIsSelectedLocal] = React.useState(isSelected);
+//   const handleDayPress = () => {
+//     if (props.isOnTheFuture || props.isOnThePast) {
+//       return;
+//     }
+//     if (props.isSelecTable && !isSelected) {
+//       return setIsSelectedLocal(true);
+//     }
+//     return;
+//   };
 
-  return (
-    <TouchableOpacity onPress={handleDayPress}>
-      <Day isSelected={isSelectedLocal} {...props}>
-        <SmallText>{dayAsText}</SmallText>
-      </Day>
-    </TouchableOpacity>
-  );
-};
+//   return (
+//     <TouchableOpacity onPress={handleDayPress}>
+//       <Day isSelected={isSelectedLocal} {...props}>
+//         <SmallText>{dayAsText}</SmallText>
+//       </Day>
+//     </TouchableOpacity>
+//   );
+// };
