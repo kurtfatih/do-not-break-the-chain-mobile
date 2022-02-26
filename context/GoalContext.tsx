@@ -40,6 +40,8 @@ interface GoalContextI {
   ) => string | undefined;
   changeMonth: (indexOfMonth: number) => void;
   changeYear: (year: number) => void;
+  getTheGoalTextByActiveDate: () => string | undefined;
+  activeDate: Date;
 }
 
 const GoalContext = createContext<GoalContextI | null>(null);
@@ -289,6 +291,8 @@ export const GoalContextProvider: React.FC = ({children}) => {
         getTheSelectedDayTextByDate,
         changeMonth,
         changeYear,
+        getTheGoalTextByActiveDate,
+        activeDate,
         // changeOnGoalText,
         deleteGoal,
       }}>

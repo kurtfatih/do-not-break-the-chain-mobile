@@ -81,7 +81,9 @@ export const GoalsScreen = () => {
           getGoals?.map(({goalId, goalTexts}) => (
             <GoalCard key={goalId}>
               <GoalCardBody onPress={() => goalPressHandle(goalId)}>
-                <XSmallText>{goalTexts ? goalTexts[0] : goalId}</XSmallText>
+                <XSmallText>
+                  {goalTexts ? goalTexts[0].text : goalId}
+                </XSmallText>
               </GoalCardBody>
               <DeleteButton
                 onPress={async () => {
