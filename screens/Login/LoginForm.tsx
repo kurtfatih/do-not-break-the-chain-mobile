@@ -40,7 +40,7 @@ export const LoginForm: React.FC<LoginFormPropsI> = ({
     <>
       <Input
         value={email}
-        keyboardType={'email-address'}
+        keyboardType="email-address"
         onChange={e => {
           handleChangeOnEmail(e.nativeEvent.text);
         }}

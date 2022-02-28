@@ -2,7 +2,7 @@ import * as React from 'react';
 import {TouchableOpacity} from 'react-native';
 import styled from 'styled-components/native';
 import AddIcon from '../../assets/add.svg';
-import {SmallText, XSmallText} from '../../components/Typography';
+import {SmallText} from '../../components/Typography';
 import {
   backgroundColor,
   darkColor,
@@ -12,6 +12,8 @@ import {
 import {useGoalContext} from '../../context/GoalContext';
 import TrashIcon from '../../assets/trash.svg';
 import {useNavigationHook} from '../../hooks/useNavigationHook';
+import {screenHeight} from '../../utils/screenUtils';
+import moment from 'moment';
 
 const MainBody = styled.View`
   flex: 4;
@@ -38,38 +40,38 @@ const GoalsContainerScrollView = styled.ScrollView.attrs(() => ({
     flexWrap: 'wrap',
   },
 }))`
-  flex: 3;
   height: 90%;
 `;
 const GoalCard = styled.View`
   width: 100%;
-  height: 200px;
+  height: ${screenHeight / 2}px;
   background-color: ${backgroundColor};
   border-radius: 10px;
   margin-horizontal: 2px;
   margin-vertical: 2px;
-  padding: 5px;
+  padding: 20px;
   justify-content: space-between;
 `;
 const GoalCardBody = styled.TouchableOpacity`
-  height: 80%;
+  height: 70%;
+  justify-content: space-between;
 `;
 const DeleteButton = styled.TouchableOpacity`
   background-color: ${orangeColor};
   border-radius: 10px;
-  height: 20%;
+  height: 15%;
   justify-content: center;
   align-items: center;
   flex-direction: row;
 `;
 export const GoalsScreen = () => {
-  const {addNewGoal, deleteGoal, getGoals} = useGoalContext();
+  const {addNewGoal, deleteGoal, getGoals, getTheMissedDay} = useGoalContext();
   const navigate = useNavigationHook();
   const goalsLength = getGoals?.length ?? 0;
   const goalPressHandle = (id: string) => {
-    console.log(id);
     navigate.navigate('Goal', {id});
   };
+
   return (
     <MainBody>
       <GoalsContainerScrollView
@@ -78,12 +80,23 @@ export const GoalsScreen = () => {
         keyboardShouldPersistTaps={'always'}
         keyboardDismissMode="on-drag">
         {goalsLength > 0 ? (
-          getGoals?.map(({goalId, goalTexts}) => (
+          getGoals?.map(({goalId, goalTexts, createdAt, selectedDays}) => (
             <GoalCard key={goalId}>
               <GoalCardBody onPress={() => goalPressHandle(goalId)}>
-                <XSmallText>
-                  {goalTexts ? goalTexts[0].text : goalId}
-                </XSmallText>
+                <SmallText>
+                  Goal Name : {goalTexts ? goalTexts[0].text : ''}
+                </SmallText>
+
+                <SmallText>
+                  Goal Created At :{' '}
+                  {moment(createdAt.toDate()).format('MM/DD/YYYY')}
+                </SmallText>
+                <SmallText>
+                  Selected Days : {!selectedDays ? 0 : selectedDays.length}
+                </SmallText>
+                <SmallText>
+                  Missed Days : {getTheMissedDay(createdAt, selectedDays)}
+                </SmallText>
               </GoalCardBody>
               <DeleteButton
                 onPress={async () => {

@@ -74,7 +74,6 @@ const FooterContainer = styled.View`
 
 const days = generateArrayFromNumber(31);
 const missedDays = todayDays - 1;
-console.log('todadays', todayDays);
 export const HomeScreen = () => {
   const navigate = useNavigationHook();
 

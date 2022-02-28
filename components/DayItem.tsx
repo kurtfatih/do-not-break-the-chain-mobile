@@ -11,14 +11,15 @@ interface DayItemProps {
   isSelected: boolean;
   dayAsText: string;
   handleDayPress: () => void;
+  handleOnLongPress?: () => void;
 }
 export const DayItem: React.FC<DayItemProps> = ({
   dayAsText,
   handleDayPress,
+  handleOnLongPress,
   ...props
 }) => {
-  // const [isSelectedLocal, setIsSelectedLocal] = React.useState(isSelected);
-  // const handleDayPress = () => {
+  // const [isSelectedLocal, setIsSelectedLocal] = React.useState(isSelected); // const handleDayPress = () => {
   //   if (props.isOnTheFuture || props.isOnThePast) {
   //     return;
   //   }
@@ -29,7 +30,7 @@ export const DayItem: React.FC<DayItemProps> = ({
   // };
 
   return (
-    <TouchableOpacity onPress={handleDayPress}>
+    <TouchableOpacity onLongPress={handleOnLongPress} onPress={handleDayPress}>
       <Day {...props}>
         <SmallText>{dayAsText}</SmallText>
       </Day>

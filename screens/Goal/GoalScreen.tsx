@@ -1,22 +1,14 @@
 import * as React from 'react';
-import {TextInput, TouchableOpacity, View} from 'react-native';
 import styled from 'styled-components/native';
-import {SmallText} from '../../components/Typography';
-import {
-  darkColor,
-  greenColor,
-  orangeColor,
-} from '../../constants/stylesConstants';
+import {darkColor} from '../../constants/stylesConstants';
 import {useGoalContext} from '../../context/GoalContext';
 import {useRouteHook} from '../../hooks/useRouteHook';
-import moment from 'moment';
 import {dateUtils} from '../../utils/dateUtils';
-import {YearPicker} from '../../components/YearPicker';
-import {MonthPicker} from '../../components/MonthPicker';
 import {nowToDate} from '../../constants/dateConstants';
 import {Timestamp} from '@firebase/firestore';
-import {DayItem, DayItemContainer} from '../../components/DayItem';
 import {GoalText} from '../../firebase/types';
+import {GoalHeader} from './GoalHeader';
+import {GoalBody} from './GoalBody';
 
 const MainBody = styled.View`
   flex: 8;
@@ -46,13 +38,11 @@ export const GoalScreen = () => {
     findAndSetGoalData(id);
   }, [findAndSetGoalData, id]);
 
-  const activeGoalName = React.useMemo(() => {
-    return getTheGoalTextByActiveDate();
+  const [localGoalName, setLocalGoalName] = React.useState<string>();
+  React.useEffect(() => {
+    const activeGoalName = getTheGoalTextByActiveDate();
+    setLocalGoalName(activeGoalName);
   }, [getTheGoalTextByActiveDate]);
-  const [localGoalName, setLocalGoalName] = React.useState(
-    () => activeGoalName,
-  );
-  console.log('heyy', localGoalName);
 
   const handleNextYear = React.useCallback(() => {
     changeYear(activeYear + 1);
@@ -123,22 +113,26 @@ export const GoalScreen = () => {
       goalData.goalId,
     );
   };
+  const handleOnLocalGoalNameChange = (e: string) => {
+    setLocalGoalName(e);
+  };
 
-  const arrayOfTheDayComponentsToProps =
+  const arrayOfTheDaysProps =
     generateNumberArrayByNumberOfDaysInActiveMonth.map(day => {
       const isSelected = isTheSelectedDayMatchWithTheDayInTheComponent(day);
       const dayDate = new Date(activeYear, activeIndexOfMonth, day);
       const dayTimestamp = dateUtils.dateToTimestamp(dayDate);
       const handleDayPress = () =>
         isTheDatesAreExactSame
-          ? handleSelectDayOnClick(dayTimestamp)
+          ? !isSelected
+            ? handleSelectDayOnClick(dayTimestamp)
+            : () => null
           : () => null;
+
       const {isTheDateOnTheFuture, isTheDateOnThePast, isTheDatesAreExactSame} =
         dateUtils.locationOfTheDateCompareToOtherDate(nowToDate, dayDate);
 
-      const selectedDayNote = isSelected
-        ? getTheSelectedDayTextByDate(dayTimestamp)
-        : '';
+      const selectedDayNote = getTheSelectedDayTextByDate(dayTimestamp);
 
       return {
         isSelected,
@@ -154,56 +148,18 @@ export const GoalScreen = () => {
 
   return (
     <MainBody>
-      <View style={{flex: 1}}>
-        <YearPicker
-          handleNext={handleNextYear}
-          handlePrev={handlePrevYear}
-          year={activeYear.toString()}
-        />
-      </View>
-      <View style={{flex: 1}}>
-        <MonthPicker
-          handleNext={handleNextMonth}
-          handlePrev={handlePrevMonth}
-          monthIndex={Number(activeIndexOfMonth)}
-        />
-      </View>
-
-      <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center'}}>
-        <TextInput
-          onChange={e => setLocalGoalName(e.nativeEvent.text)}
-          onSubmitEditing={() => handleGoalNameInputOnBlur()}
-          value={activeGoalName}
-          placeholder="Goal name..."
-        />
-      </View>
-      <View style={{flex: 5}}>
-        <DayItemContainer>
-          {arrayOfTheDayComponentsToProps.map(
-            (
-              {
-                day,
-                handleDayPress,
-                isSelected,
-                isTheDateOnTheFuture,
-                isTheDateOnThePast,
-                isTheDatesAreExactSame,
-              },
-              index,
-            ) => (
-              <DayItem
-                key={index}
-                dayAsText={day.toString()}
-                handleDayPress={handleDayPress}
-                isTheDateOnTheFuture={isTheDateOnTheFuture}
-                isTheDateOnThePast={isTheDateOnThePast}
-                isTheDatesAreExactSame={isTheDatesAreExactSame}
-                isSelected={isSelected}
-              />
-            ),
-          )}
-        </DayItemContainer>
-      </View>
+      <GoalHeader
+        activeIndexOfMonth={activeIndexOfMonth}
+        year={activeYear.toString()}
+        handleGoalNameInputOnBlur={handleGoalNameInputOnBlur}
+        handleNextMonth={handleNextMonth}
+        handleNextYear={handleNextYear}
+        handleOnLocalGoalNameChange={handleOnLocalGoalNameChange}
+        handlePrevMonth={handlePrevMonth}
+        handlePrevYear={handlePrevYear}
+        localGoalName={localGoalName ?? ''}
+      />
+      <GoalBody arrayOfTheDaysProps={arrayOfTheDaysProps} />
     </MainBody>
   );
 };

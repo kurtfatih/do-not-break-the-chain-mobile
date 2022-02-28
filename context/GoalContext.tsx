@@ -8,7 +8,10 @@ import {
   GoalTypeUpdatableFieldType,
   SelectedDaysType,
 } from '../firebase/types';
-import {generateArrayFromNumber} from '../utils/arrUtils';
+import {
+  generateArrayFromNumber,
+  replaceObjInsideArrayWithExistOneByYear,
+} from '../utils/arrUtils';
 import {dateUtils} from '../utils/dateUtils';
 import {checkIfTwoNumberAreEqual} from '../utils/numberUtils';
 import {useDbContext} from './DbContext';
@@ -42,6 +45,7 @@ interface GoalContextI {
   changeYear: (year: number) => void;
   getTheGoalTextByActiveDate: () => string | undefined;
   activeDate: Date;
+  takeNotForTheDay: (note: string, dayTimestamp: Timestamp) => void;
 }
 
 const GoalContext = createContext<GoalContextI | null>(null);
@@ -210,7 +214,6 @@ export const GoalContextProvider: React.FC = ({children}) => {
   );
 
   const addNewGoal = React.useCallback(async () => {
-    console.log('goalsdata', goalsData, goalsData?.length);
     if (!goalsData || goalsData.length > 11) {
       return;
     }
@@ -222,12 +225,12 @@ export const GoalContextProvider: React.FC = ({children}) => {
     [deleteGoalOnDb],
   );
 
-  const updateGoal = (
+  const updateGoal = async (
     fieldsToUpdate: GoalTypeUpdatableFieldType,
     goalId: string,
   ) => {
     const obj: GoalTypeUpdatableFieldType = {...fieldsToUpdate};
-    updateGoalOnDb(goalId, obj);
+    await updateGoalOnDb(goalId, obj);
   };
 
   const getTheMissedDay = React.useCallback(
@@ -271,6 +274,38 @@ export const GoalContextProvider: React.FC = ({children}) => {
     },
     [],
   );
+  const takeNotForTheDay = (note: string, dayTimestamp: Timestamp) => {
+    if (!note || !goalData) {
+      return;
+    }
+
+    const newObj = {
+      date: dayTimestamp,
+      note,
+    };
+
+    if (goalData.selectedDays) {
+      const res = replaceObjInsideArrayWithExistOneByYear(
+        goalData.selectedDays,
+        newObj,
+      );
+
+      return updateGoal(
+        {
+          selectedDays: res,
+        },
+        goalData.goalId,
+      );
+    } else {
+      return updateGoal(
+        {
+          selectedDays: [newObj],
+        },
+        goalData?.goalId,
+      );
+    }
+  };
+
   //update goal
   return (
     <GoalContext.Provider
@@ -293,6 +328,7 @@ export const GoalContextProvider: React.FC = ({children}) => {
         changeYear,
         getTheGoalTextByActiveDate,
         activeDate,
+        takeNotForTheDay,
         // changeOnGoalText,
         deleteGoal,
       }}>

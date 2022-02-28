@@ -20,7 +20,6 @@ const now = Timestamp.now();
 
 const nowToDate = dateUtils.timestampToDate(now);
 
-console.log('now', now, nowToDate);
 const nowDateCopy = new Date(nowToDate);
 const after1Date = new Date(nowDateCopy.setDate(nowDateCopy.getDate() + 1));
 const {month, year, day} = dateUtils.parseTheDate(nowToDate);
